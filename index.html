@@ -32,8 +32,8 @@
             <div class="container d-flex justify-content-center">
                 <div class="row g-0">
                     <div class="col-md-4" v-for="item in col.items" :key="item.href">
-                        <div class="card" style="width: 18rem;">
-                            <div class="card-body">
+                       <div class="card" style="width: 18rem;">  <!--  v-if="!visible" -->
+                            <div class="card-body"  >
                                 <item-data :item="item"></item-data>
                             </div>
                         </div>

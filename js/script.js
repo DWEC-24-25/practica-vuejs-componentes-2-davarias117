@@ -38,15 +38,15 @@ const server_data = {
     }
 };
 
-// // Componente edit-form
-// const EditForm = defineComponent({
-//     template: `
-//         <div>
-//             <h2>Edit Form</h2>
-//             <!-- Aquí iría el formulario de edición -->
-//         </div>
-//     `
-// });
+// Componente edit-form
+const EditForm = defineComponent({
+    template: `
+        <div>
+            <h2>Edit Form</h2>
+            <!-- Aquí iría el formulario de edición -->
+        </div>
+    `
+});
 
 // // Componente item-data
 const ItemData = defineComponent({
@@ -59,26 +59,31 @@ const ItemData = defineComponent({
   data()
   {
     return {
-        visible: true
+        visible: true,
+        edit: false
     }
   },
   methods:
   {
-    toggleEditformVisibility()
+    toggleEditFormVisibility()
     {
-        
+        this.edit = !this.edit;
+        this.visible = !this.visible;
     }
   },
 
   template: `
-      <div>
+    <div>
+      <div v-if="visible">
           <p><strong>Name</strong><br/>{{ item.data.find(d => d.name === 'name').value }}</p>
           <p><strong>Description</strong><br/>{{ item.data.find(d => d.name === 'description').value }}</p>
           <p><strong>Director</strong><br/> {{ item.data.find(d => d.name === 'director').value }}</p>
           <p><strong>Release Date</strong> <br/>{{ item.data.find(d => d.name === 'datePublished').value }}</p>
           <a :href="item.href" class="btn btn-primary" target="_blank">Ver</a>
-          <a :href="item.href" class="btn btn-secondary" target="_blank">Borrar</a>
+          <a class="btn btn-secondary" target="_blank" @click="toggleEditFormVisibility">Editar</a>
       </div>
+      <EditForm v-if="edit" @formClosed="toggleEditFormVisibility"/>
+    </div>
   `
 });
 
@@ -95,7 +100,7 @@ const app = createApp({
 });
 
 // // Registrar los componentes globalmente
-// app.component('edit-form', EditForm);
+app.component('edit-form', EditForm);
 app.component('item-data', ItemData);
 
 // // Montar la aplicación en el elemento con id 'app'
