@@ -40,10 +40,23 @@ const server_data = {
 
 // Componente edit-form
 const EditForm = defineComponent({
+    methods:{
+        closeForm()
+        {
+            this.$emit("formClosed");
+        }
+    },
     template: `
         <div>
-            <h2>Edit Form</h2>
-            <!-- Aquí iría el formulario de edición -->
+            <p><strong>Name</strong></p>
+            <input type="text" class="form-control" v-model.lazy ="itemData.name"/>
+            <p><strong>Description</strong></p>
+            <textarea class="form-control"v-model.lazy ="itemData.description" ></textarea/>
+            <p><strong>Director</strong></p>
+            <input type="text" class="form-control"v-model.lazy ="itemData.director"/ >
+            <p><strong>Release Date</strong></p>
+            <input type="text" class="form-control" v-model.lazy ="itemData.publishedDate"/> <br>
+            <a class="btn btn-danger" target="_blank" @click="closeForm">Cancelar</a>
         </div>
     `
 });
@@ -60,7 +73,13 @@ const ItemData = defineComponent({
   {
     return {
         visible: true,
-        edit: false
+        edit: false,
+        editableItem:{
+            name: this.item.data.find(d=> d.name ==='name').value,
+            description: this.item.data.find(d=> d.name ==='description').value,
+            director:this.item.data.find(d=> d.name ==='director').value,
+            datePublished: this.item.data.find(d=> d.name ==='datePublished').value
+        }
     }
   },
   methods:
@@ -82,7 +101,7 @@ const ItemData = defineComponent({
           <a :href="item.href" class="btn btn-primary" target="_blank">Ver</a>
           <a class="btn btn-secondary" target="_blank" @click="toggleEditFormVisibility">Editar</a>
       </div>
-      <EditForm v-if="edit" @formClosed="toggleEditFormVisibility"/>
+      <edit-form v-if="edit" @formClosed="toggleEditFormVisibility"/>
     </div>
   `
 });
