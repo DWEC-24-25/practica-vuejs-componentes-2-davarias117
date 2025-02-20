@@ -40,23 +40,29 @@ const server_data = {
 
 // Componente edit-form
 const EditForm = defineComponent({
+    props:{
+        itemData:{
+            type: Object,
+            required:true
+        }
+    },
     methods:{
         closeForm()
         {
-            this.$emit("formClosed");
+            this.$emit("formClosed", this.itemData);
         }
     },
     template: `
         <div>
             <p><strong>Name</strong></p>
-            <input type="text" class="form-control" v-model.lazy ="itemData.name"/>
+            <input type="text" class="form-control" v-model ="itemData.name"/>
             <p><strong>Description</strong></p>
-            <textarea class="form-control"v-model.lazy ="itemData.description" ></textarea/>
+            <textarea class="form-control"v-model="itemData.description" style="height: 125px" ></textarea/>
             <p><strong>Director</strong></p>
-            <input type="text" class="form-control"v-model.lazy ="itemData.director"/ >
+            <input type="text" class="form-control"v-model ="itemData.director"/ >
             <p><strong>Release Date</strong></p>
-            <input type="text" class="form-control" v-model.lazy ="itemData.publishedDate"/> <br>
-            <a class="btn btn-danger" target="_blank" @click="closeForm">Cancelar</a>
+            <input type="text" class="form-control" v-model ="itemData.datePublished"/> <br>
+            <a class="btn btn-primary" target="_blank" @click="closeForm">Cerrar</a>
         </div>
     `
 });
@@ -88,7 +94,21 @@ const ItemData = defineComponent({
     {
         this.edit = !this.edit;
         this.visible = !this.visible;
+    },
+
+    updateItem(updatedData) {
+        const item = this.item.data;
+        item.find(d => d.name === 'name').value = updatedData.name;
+        item.find(d => d.name === 'description').value = updatedData.description;
+        item.find(d => d.name === 'director').value = updatedData.director;
+        item.find(d => d.name === 'datePublished').value = updatedData.datePublished;
+    },
+    handleFormClosed(updatedData)
+    {
+        this.updateItem(updatedData);
+        this.toggleEditFormVisibility();
     }
+    
   },
 
   template: `
@@ -101,7 +121,7 @@ const ItemData = defineComponent({
           <a :href="item.href" class="btn btn-primary" target="_blank">Ver</a>
           <a class="btn btn-secondary" target="_blank" @click="toggleEditFormVisibility">Editar</a>
       </div>
-      <edit-form v-if="edit" @formClosed="toggleEditFormVisibility"/>
+      <edit-form v-if="edit" :itemData="editableItem" @formClosed="handleFormClosed"/>
     </div>
   `
 });
