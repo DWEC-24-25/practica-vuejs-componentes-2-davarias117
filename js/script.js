@@ -1,3 +1,4 @@
+const { createApp, reactive, defineComponent } = Vue;
 // Sample data
 const server_data = {
     collection: {
@@ -39,47 +40,108 @@ const server_data = {
 
 // Componente edit-form
 const EditForm = defineComponent({
-    template: `
-        <div>
-            <h2>Edit Form</h2>
-            <!-- Aquí iría el formulario de edición -->
-        </div>
-    `
-});
-
-// Componente item-data
-const ItemData = defineComponent({
-    props: {
-        item: {
+    props:{
+        itemData:{
             type: Object,
-            required: true
+            required:true
+        }
+    },
+    methods:{
+        closeForm()
+        {
+            this.$emit("formClosed", this.itemData);
         }
     },
     template: `
         <div>
-            <h3>{{ item.data.find(d => d.name === 'name').value }}</h3>
-            <p>{{ item.data.find(d => d.name === 'description').value }}</p>
-            <p><strong>Director:</strong> {{ item.data.find(d => d.name === 'director').value }}</p>
-            <p><strong>Release Date:</strong> {{ item.data.find(d => d.name === 'datePublished').value }}</p>
-            <a :href="item.href" target="_blank">More Info</a>
+            <p><strong>Name</strong></p>
+            <input type="text" class="form-control" v-model ="itemData.name"/>
+            <p><strong>Description</strong></p>
+            <textarea class="form-control"v-model="itemData.description" style="height: 125px" ></textarea/>
+            <p><strong>Director</strong></p>
+            <input type="text" class="form-control"v-model ="itemData.director"/ >
+            <p><strong>Release Date</strong></p>
+            <input type="text" class="form-control" v-model ="itemData.datePublished"/> <br>
+            <a class="btn btn-primary" target="_blank" @click="closeForm">Cerrar</a>
         </div>
     `
 });
 
-// Crear la aplicación Vue
+// // Componente item-data
+const ItemData = defineComponent({
+  props: {
+      item: {
+          type: Object,
+          required: true
+      }
+  },
+  data()
+  {
+    return {
+        visible: true,
+        edit: false,
+        editableItem:{
+            name: this.item.data.find(d=> d.name ==='name').value,
+            description: this.item.data.find(d=> d.name ==='description').value,
+            director:this.item.data.find(d=> d.name ==='director').value,
+            datePublished: this.item.data.find(d=> d.name ==='datePublished').value
+        }
+    }
+  },
+  methods:
+  {
+    toggleEditFormVisibility()
+    {
+        this.edit = !this.edit;
+        this.visible = !this.visible;
+    },
+
+    updateItem(updatedData) {
+        const item = this.item.data;
+        item.find(d => d.name === 'name').value = updatedData.name;
+        item.find(d => d.name === 'description').value = updatedData.description;
+        item.find(d => d.name === 'director').value = updatedData.director;
+        item.find(d => d.name === 'datePublished').value = updatedData.datePublished;
+    },
+    handleFormClosed(updatedData)
+    {
+        this.updateItem(updatedData);
+        this.toggleEditFormVisibility();
+    }
+    
+  },
+
+  template: `
+    <div>
+      <div v-if="visible">
+          <p><strong>Name</strong><br/>{{ item.data.find(d => d.name === 'name').value }}</p>
+          <p><strong>Description</strong><br/>{{ item.data.find(d => d.name === 'description').value }}</p>
+          <p><strong>Director</strong><br/> {{ item.data.find(d => d.name === 'director').value }}</p>
+          <p><strong>Release Date</strong> <br/>{{ item.data.find(d => d.name === 'datePublished').value }}</p>
+          <a :href="item.href" class="btn btn-primary" target="_blank">Ver</a>
+          <a class="btn btn-secondary" target="_blank" @click="toggleEditFormVisibility">Editar</a>
+      </div>
+      <edit-form v-if="edit" :itemData="editableItem" @formClosed="handleFormClosed"/>
+    </div>
+  `
+});
+
+// // Crear la aplicación Vue
+
 const app = createApp({
     setup() {
         const col = reactive(server_data.collection);
-
+        console.log(col)
         return {
-            col
+           col
         };
     }
 });
 
-// Registrar los componentes globalmente
+// // Registrar los componentes globalmente
 app.component('edit-form', EditForm);
 app.component('item-data', ItemData);
 
-// Montar la aplicación en el elemento con id 'app'
+// // Montar la aplicación en el elemento con id 'app'
 app.mount('#app');
+
